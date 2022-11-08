@@ -26,7 +26,7 @@ jobs:
 
       - name: Get commit messages
         run: |
-          echo "${{ github.event.head_commit.message }}\n\nci: version bump to ${{version}}"
+          echo "${{ github.event.head_commit.message }}\n\nci: version bump to"
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
