@@ -26,10 +26,12 @@ jobs:
 
       - name: Get commit messages
         run: |
-          echo "${{ github.event.head_commit.message }}\n\nci: version bump to"
+          echo -e "${{ github.event.head_commit.message }}\nci:version bump"
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
+        with:
+          commit-message: "${{ github.event.head_commit.message }}"+ "\n" + "ci: version bump to {{version}}"
 
       - name: Get version of package.json2
         run: |
