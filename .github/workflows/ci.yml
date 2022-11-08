@@ -28,9 +28,9 @@ jobs:
         run: |
           echo "${{ github.event.head_commit.message }}"
           echo '${{ toJSON(github.event.commits) }}'
-          echo '${{ toJSON(github.event.commits) }}' | jq '.[].message'
-          echo 'MESSAGE=$(echo "${{ toJSON(github.event.commits) }}" | jq ".[].message" )' >> $GITHUB_ENV
-          echo 'message = ${{env.MESSAGE}}'
+          echo '${{ toJSON(github.event.commits) }}' | jq -r '.[].message'
+          echo 'MESSAGE=$(echo "${{ toJSON(github.event.commits) }}" | jq -r ".[].message" )' >> $GITHUB_ENV
+          echo 'message = ${{ env.MESSAGE }}'
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
