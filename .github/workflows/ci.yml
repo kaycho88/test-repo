@@ -30,7 +30,6 @@ jobs:
           echo '${{ toJSON(github.event.commits) }}'
           echo '${{ toJSON(github.event.commits) }}' | jq -r '.[].message'
           echo 'MESSAGE=$(echo "${{ toJSON(github.event.commits) }}" | jq -r ".[].message" )' >> $GITHUB_ENV
-          echo 'message = ${{ env.MESSAGE }}'
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
