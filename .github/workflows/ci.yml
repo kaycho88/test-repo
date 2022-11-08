@@ -24,8 +24,14 @@ jobs:
           version=$(node -p "require('./package.json').version")
           echo "CURRENT_VERSION=$version" >> $GITHUB_ENV
 
+      - name: Get commit messages
+        run: |
+          echo "${{ github.event.head_commit.message }}"
+
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
+        with:
+          commit-message: ${{ github.event.head_commit.message }}
 
       - name: Get version of package.json2
         run: |
