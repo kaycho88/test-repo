@@ -17,7 +17,6 @@ function App() {
         >
           Learn React...
         </a>
-	<p>this is new line</p>
       </header>
     </div>
   );
