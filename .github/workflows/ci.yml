@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "${{ github.event.head_commit.message }}"
           echo '${{ github.event.commits }}'
-          for commit in toJSON(github.event.commits); do echo $commit.message; done;
+          for commit in ${{ toJSON(github.event.commits) }}; do echo $commit; done;
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
