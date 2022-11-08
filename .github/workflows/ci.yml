@@ -25,15 +25,17 @@ jobs:
           echo "CURRENT_VERSION=$version" >> $GITHUB_ENV
 
       - name: Get commit messages
+        id: get-commit-message
         run: |
           echo "${{ github.event.head_commit.message }}"
           echo '${{ toJSON(github.event.commits) }}'
           echo '${{ toJSON(github.event.commits) }}' | jq -r '.[].message'
+          echo "MESSAGE=$( echo '${{ toJSON(github.event.commits) }}' | jq -r '.[].message')" >> $GITHUB_OUTPUT
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
         with:
-          commit-message: ${{ echo '${{ toJSON(github.event.commits) }}' | jq -r '.[].message' }}
+          commit-message: ${{ steps.get-commit-message.outputs.MESSAGE }}
 
       - name: Get version of package.json2
         run: |
