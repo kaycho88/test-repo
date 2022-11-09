@@ -35,9 +35,6 @@ jobs:
           echo "$MESSAGE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
   
-      - name: print-message
-        run: echo ${{ env.MESSAGE }}
-  
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v9.0.31
         with:
