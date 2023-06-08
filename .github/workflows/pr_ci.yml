@@ -3,6 +3,8 @@ on:
   pull_request:
     branches:
       - develop
+      - '!main'
+      - '!master'
 
 jobs:
   detect_wiki_link:
