@@ -18,7 +18,5 @@ jobs:
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
           HAS_WIKI=$(echo ${{contains(env.PR_COMMENTS, env.LINK)}})
-          echo $HAS_WIKI
           echo "Does the PR message include a wiki link? $HAS_WIKI"
           if [[ $HAS_WIKI == true ]]; then exit 0; else exit 1; fi
-
