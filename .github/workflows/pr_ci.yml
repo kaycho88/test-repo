@@ -8,7 +8,7 @@ on:
 
 jobs:
   detect_wiki_link:
-    if:  contains(fromJSON('["feat", "Feat"]'), github.head_ref)
+#     if:  contains(fromJSON('["feat", "Feat"]'), github.head_ref)
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
@@ -16,6 +16,7 @@ jobs:
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
+          echo "${{contains(fromJSON('["feat", "Feat"]'), github.head_ref)}}"
           echo "${{ github.event.pull_request.body }}"
           echo "${PR_COMMENTS}"
           echo "${PR_COMMENTS}" | jq '. [] | .body'
