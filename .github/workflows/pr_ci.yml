@@ -25,4 +25,4 @@ jobs:
           echo "${PR_COMMENTS}"
           echo "${WIKI_LINK}"
           echo "${{ contains(github.event.pull_request.body, WIKI_LINK)}}"
-      
+
