@@ -14,7 +14,7 @@ jobs:
       - name: Get pull request message body
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
-          WIKI_LINK: "https://github.com/3billion/${{GITHUB_REPOSITORY#*/}}/wiki/"
+          WIKI_LINK: "https://github.com/3billion/${GITHUB_REPOSITORY#*/}/wiki/"
         run: |
           echo "${GITHUB_REPOSITORY#*/}"
           echo "${GITHUB_REPOSITORY}"
