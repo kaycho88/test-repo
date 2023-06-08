@@ -11,11 +11,14 @@ jobs:
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
+      - name: Set env
+        run: echo "LINK_NAME=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
+    
       - name: Get pull request message body
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
           REPO: ${{github.repository}}
-          LINK: https://github.com/${{ env.REPO }}/wiki
+          LINK: ${{env.LINK_NAME}}
         run: |
           echo "${GITHUB_REPOSITORY#*/}"
           echo "${GITHUB_REPOSITORY}"
@@ -26,4 +29,6 @@ jobs:
           echo "$PR_COMMENTS"
           echo "$REPO"
           echo "$LINK"
+          echo "${{env.LINK_NAME}}"
+          echo "${{ contains(env.PR_COMMENTS, env.LINK_NAME)}}"
           echo "${{ contains(env.PR_COMMENTS, env.LINK)}}"
