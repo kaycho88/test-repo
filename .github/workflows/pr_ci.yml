@@ -15,6 +15,7 @@ jobs:
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
           REPO: ${{github.repository}}
+          LINK: https://github.com/${{ env.REPO }}/wiki
         run: |
           echo "${GITHUB_REPOSITORY#*/}"
           echo "${GITHUB_REPOSITORY}"
@@ -24,5 +25,5 @@ jobs:
           echo "${{ github.event.pull_request.body }}"
           echo "$PR_COMMENTS"
           echo "$REPO"
-          echo "${{ contains(github.event.pull_request.body, 'https://github.com/$REPO/wiki/')}}"
-          echo "${{ contains($PR_COMMENTS, 'https://github.com/$REPO/wiki/')}}"
+          echo "$LINK"
+          echo "${{ contains(env.PR_COMMENTS, env.LINK)}}"
