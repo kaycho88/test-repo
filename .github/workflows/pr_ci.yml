@@ -1,0 +1,22 @@
+name: Wiki-Detector
+on:
+  pull_request_target:
+    types:
+      - opened
+    branches:
+      - develop
+
+jobs:
+  run_if:
+    if:  startsWith(github.head_ref, '[Ff]eat')
+    name: detect
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get pull request message body
+        env: 
+          PR_COMMENTS: ${{ toJSON(github.event.issue.pull_request) }}
+        run: |
+          echo "${{ github.event.issue.pull_request }}"
+          echo "${PR_COMMENTS}"
+          echo "${PR_COMMENTS}" | jq '. [] | .body'
+      
