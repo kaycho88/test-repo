@@ -3,12 +3,10 @@ on:
   pull_request:
     branches:
       - develop
-      - '!master'
-      - '!main'
 
 jobs:
   detect_wiki_link:
-    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')
+    if: (startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')) && (github.base_ref != 'main' || github.base_ref != 'master')
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
