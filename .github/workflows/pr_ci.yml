@@ -8,14 +8,15 @@ on:
 
 jobs:
   detect_wiki_link:
-    name: detect
+    if:  startsWith(github.head_ref, '[fF]eat')
+    name: detect-wiki
     runs-on: ubuntu-latest
     steps:
       - name: Get pull request message body
         env: 
-          PR_COMMENTS: ${{ toJSON(github.event.issue.pull_request) }}
+          PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
-          echo "${{ github.event.issue.pull_request }}"
+          echo "${{ github.event.pull_request.body }}"
           echo "${PR_COMMENTS}"
           echo "${PR_COMMENTS}" | jq '. [] | .body'
       
