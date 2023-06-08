@@ -24,6 +24,6 @@ jobs:
           echo "${{ github.event.pull_request.body }}"
           echo "${PR_COMMENTS}"
           echo "${WIKI_LINK}"
-          echo "${{ contains(github.event.pull_request.body, WIKI_LINK)}}"
+          echo "${{ contains(github.event.pull_request.body, ${WIKI_LINK})}}"
           echo "${{ contains(github.event.pull_request.body, 'https://github.com/3billion/${GITHUB_REPOSITORY#*/}/wiki/')}}"
 
