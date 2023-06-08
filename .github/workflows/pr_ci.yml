@@ -7,8 +7,8 @@ on:
       - develop
 
 jobs:
-  run_if:
-    if:  startsWith(github.head_ref, '[Ff]eat')
+  detect_wiki_link:
+    if:  startsWith(github.head_ref, 'feat/')
     name: detect
     runs-on: ubuntu-latest
     steps:
