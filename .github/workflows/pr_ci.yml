@@ -1,34 +1,23 @@
 name: Wiki-Detector
 on:
   pull_request:
-#     types: [assigned, opened, edited, ready_for_review, review_requested, reopened]
     branches:
       - develop
 
 jobs:
   detect_wiki_link:
-
+    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
       - name: Set env
-        run: echo "LINK_NAME=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
+        run: echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
-      - name: Get pull request message body
+      - name: Check pull request message for wiki link
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
-          REPO: ${{github.repository}}
-          LINK: ${{env.LINK_NAME}}
         run: |
-          echo "${GITHUB_REPOSITORY#*/}"
-          echo "${GITHUB_REPOSITORY}"
-          echo "${{github.head_ref}}"
-          echo "${{startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')}}"
-          echo "${{contains(github.head_ref, fromJSON('["feat", "Feat"]'))}}"
-          echo "${{ github.event.pull_request.body }}"
-          echo "$PR_COMMENTS"
-          echo "$REPO"
-          echo "$LINK"
-          echo "${{env.LINK_NAME}}"
-          echo "${{ contains(env.PR_COMMENTS, env.LINK_NAME)}}"
-          echo "${{ contains(env.PR_COMMENTS, env.LINK)}}"
+          echo "HAS_WIKI=$(echo ${{contains(env.PR_COMMENTS, env.LINK)}}) >> $GITHUB_ENV"
+          echo $HAS_WIKI
+          echo "Does the PR message include a wiki link? $HAS_WIKI"
+          if [[ $HAS_WIKI == 'true' ]]; then exit 0; else exit 1; fi
