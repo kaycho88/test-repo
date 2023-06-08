@@ -1,9 +1,10 @@
 name: Wiki-Detector
 on:
-  pull_request_target:
-    types: [assigned, opened, edited, ready_for_review, review_requested, reopened]
+  pull_request:
+#     types: [assigned, opened, edited, ready_for_review, review_requested, reopened]
     branches:
-      - develop
+      - "**"
+#       - develop
 
 jobs:
   detect_wiki_link:
