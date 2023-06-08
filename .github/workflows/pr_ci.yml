@@ -1,8 +1,6 @@
 name: Wiki-Detector
 on:
   pull_request_target:
-    types:
-      - opened
     branches:
       - develop
 
