@@ -16,8 +16,12 @@ jobs:
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
-          echo "${{contains(fromJSON('["feat", "Feat"]'), github.head_ref)}}"
+          echo "${GITHUB_REPOSITORY#*/}"
+          echo "${GITHUB_REPOSITORY}"
+          echo "${{github.head_ref}}"
+          echo "${{startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')}}"
+          echo "${{contains(github.head_ref, fromJSON('["feat", "Feat"]'))}}"
           echo "${{ github.event.pull_request.body }}"
           echo "${PR_COMMENTS}"
-          echo "${PR_COMMENTS}" | jq '. [] | .body'
+          echo "${{ contains(github.event.pull_request.body, 'https://github.com/3billion/${GITHUB_REPOSITORY#*/}/wiki/')}}"
       
