@@ -6,14 +6,14 @@ on:
 
 jobs:
   detect_wiki_link:
-    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')
+    if: (startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')) && (github.event.pull_reqeust.base.ref != 'main' || github.event.pull_reqeust.base.ref != 'master')
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
       - name: Set env
         run: |
-          echo "${{ github.base_ref }}"
-          echo "IS_MASTER=$(echo ${{ github.base_ref == 'main' || github.base_ref == 'master' }})" >> $GITHUB_ENV
+          echo "${{ github.event.pull_reqeust.base.ref }}"
+          echo "IS_MASTER=$(echo ${{ github.event.pull_reqeust.base.ref == 'main' || github.event.pull_reqeust.base.ref == 'master' }})" >> $GITHUB_ENV
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
