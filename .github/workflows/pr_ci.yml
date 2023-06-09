@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Set env
         run: |
-          echo "${{ toJSON(github) }}"
-          echo "${{ github.event.pull_request.base.ref }}"
           echo "IS_MASTER=$(echo ${{ github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'master' }})" >> $GITHUB_ENV
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
