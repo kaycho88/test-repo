@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Set env
         run: |
-          echo "${{ github.base_ref }}"
-          echo "IS_MASTER=$(echo ${{ github.base_ref == 'main' || github.base_ref == 'master' }})" >> $GITHUB_ENV
+          echo "${{ github.event.pull_request.base.ref }}"
+          echo "IS_MASTER=$(echo ${{ github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'master' }})" >> $GITHUB_ENV
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
