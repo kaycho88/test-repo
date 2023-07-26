@@ -22,9 +22,7 @@ jobs:
           LABELS=$(gh pr view \
                     --json labels \
                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
-          echo "LABELS<<EOF" >> $GITHUB_ENV
           echo "$LABELS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
         env: 
@@ -32,6 +30,7 @@ jobs:
         run: |
           echo "feature label? ${{ env.LABELS }}"
           echo ${{contains(env.LABELS, 'feature')}}
+          echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}}
           HAS_WIKI=$(echo ${{contains(env.PR_COMMENTS, env.LINK)}})
           echo "Does the PR message include a wiki link? $HAS_WIKI"
           if [[ $HAS_WIKI == true ]]; then exit 0; else exit 1; fi
