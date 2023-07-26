@@ -14,25 +14,24 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set env
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-          GH_TOKEN: ${{ github.token }}
+#         env:
+#           PR_NUMBER: ${{ github.event.number }}
+#           GH_TOKEN: ${{ github.token }}
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
-          LABELS=$(gh pr view \
-                    --json labels \
-                    --jq '.labels[].name | select("feature")' "$PR_NUMBER")
-          echo "LABELS<<EOF" >> $GITHUB_ENV
-          echo "$LABELS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}}
+#           LABELS=$(gh pr view \
+#                     --json labels \
+#                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
+#           echo "LABELS<<EOF" >> $GITHUB_ENV
+#           echo "$LABELS" >> $GITHUB_ENV
+#           echo "EOF" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
+        if: contains(github.event.pull_request.labels.*.name, 'feature')
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
-          echo "feature label? ${{ env.LABELS }}"
-          echo ${{contains(env.LABELS, 'feature')}}
-          echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}}
           HAS_WIKI=$(echo ${{contains(env.PR_COMMENTS, env.LINK)}})
           echo "Does the PR message include a wiki link? $HAS_WIKI"
           if [[ $HAS_WIKI == true ]]; then exit 0; else exit 1; fi
