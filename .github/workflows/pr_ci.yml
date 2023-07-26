@@ -14,10 +14,11 @@ jobs:
         run: |
           echo "IS_MASTER=$(echo ${{ github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'master' }})" >> $GITHUB_ENV
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
+          echo ${{ github.event.label.name }}
     
       - name: Check pull request message for wiki link
 #         if: env.IS_MASTER == 'false'
-        if: github.event.label.name == 'feature'
+        if: ${{ github.event.label.name }} == 'feature'
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
