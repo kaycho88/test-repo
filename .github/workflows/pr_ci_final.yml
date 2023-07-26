@@ -1,4 +1,4 @@
-name: Wiki-Detector
+name: Wiki-Detector2
 on:
   pull_request:
     branches:
