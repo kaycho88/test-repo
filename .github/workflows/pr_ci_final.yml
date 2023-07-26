@@ -22,6 +22,7 @@ jobs:
           LABELS=$(gh pr view \
                     --json labels \
                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
+          echo "LABELS<<EOF" >> $GITHUB_ENV
           echo "$LABELS" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
