@@ -13,15 +13,9 @@ jobs:
       - name: Set env
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
-          labels=()
-          echo "${{ toJSON(github.event.pull_request.labels) }}"
-          for label in ${{ toJSON(github.event.pull_request.labels) }}; do
-            echo $label
-            echo "${label[0]}"
-            labels+=($label[name])
-            echo "${labels[@]}"
-          done
-          echo "LABELS=$labels" >> $GITHUB_ENV
+          gh pr view \
+            --json labels \
+            --jq '.labels[].name | select("feature"))'
     
       - name: Check pull request message for wiki link
         env: 
