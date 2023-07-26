@@ -15,7 +15,10 @@ jobs:
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
           labels=()
           for label in ${{ github.event.pull_request.labels }}; do
+            echo $label
+            echo "${label[name]}"
             labels+=$label[name]
+            echo "${labels[@]}"
           done
           echo "LABELS=$labels" >> $GITHUB_ENV
     
