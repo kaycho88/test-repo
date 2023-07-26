@@ -6,7 +6,7 @@ on:
 
 jobs:
   detect_wiki_link:
-    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat') && contains(github.event.pull_request.labels.*.name, 'feature')
+    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
@@ -14,6 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set env
+        if: contains(github.event.pull_request.labels.*.name, 'feature')
         env:
           PR_NUMBER: ${{ github.event.number }}
           GH_TOKEN: ${{ github.token }}
