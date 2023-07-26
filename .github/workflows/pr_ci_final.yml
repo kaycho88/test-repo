@@ -28,7 +28,7 @@ jobs:
 #           echo "EOF" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
-        if: contains(github.event.pull_request.labels.*.name, 'feature')
+        if: ${{contains(github.event.pull_request.labels.*.name, 'feature')}}
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
