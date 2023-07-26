@@ -14,7 +14,7 @@ jobs:
         run: echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
-        if: github.event.label.name == 'feature'
+        if: ${{ github.event.label.name }} == 'feature'
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
