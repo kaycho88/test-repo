@@ -19,16 +19,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
-          l=gh pr view \
-            --json labels \
-            --jq '.labels[].name | select("feature")' "$PR_NUMBER"
-          echo "LABEL=$l" >> $GIHUB_ENV
+          FEATURE_LABEL=$(gh pr view \
+                    --json labels \
+                    --jq '.labels[].name | select("feature")' "$PR_NUMBER")
+          echo "$FEATURE_LABEL" >> $GIHUB_ENV
     
       - name: Check pull request message for wiki link
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
-          echo "feature label? $LABEL"
+          echo "feature label? $FEATURE_LABEL"
           HAS_WIKI=$(echo ${{contains(env.PR_COMMENTS, env.LINK)}})
           echo "Does the PR message include a wiki link? $HAS_WIKI"
           if [[ $HAS_WIKI == true ]]; then exit 0; else exit 1; fi
