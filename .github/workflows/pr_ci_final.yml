@@ -19,10 +19,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
-          FEATURE_LABEL=$(gh pr view \
-                    --json labels \
-                    --jq '.labels[].name | select("feature")' "$PR_NUMBER")
-          echo "LABEL=$FEATURE_LABEL" >> $GITHUB_ENV
+          gh pr view \
+            --json labels \
+            --jq '.labels[].name | select("feature")' "$PR_NUMBER"
+          
     
       - name: Check pull request message for wiki link
         env: 
