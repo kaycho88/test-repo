@@ -13,14 +13,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      
+      - name: Check label
+        run: |
+          HAS_FEATURE=$(echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}})
+          echo "Does the PR label include a 'feature'? $HAS_FEATURE"
+          if [[ $HAS_FEATURE == true ]]; then exit 0; else exit 1; fi
+
       - name: Set env
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'feature') }}
         env:
           PR_NUMBER: ${{ github.event.number }}
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
-          echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}}
 #           LABELS=$(gh pr view \
 #                     --json labels \
 #                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
