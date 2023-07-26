@@ -11,15 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Set env
         env:
-          PR_NUMBER: ${{ github.event.number }}
+#           PR_NUMBER: ${{ github.event.number }}
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
           gh pr view \
             --json labels \
-            --jq '.labels[].name | select("feature")' "$PR_NUMBER"
+            --jq '.labels[].name | select("feature")'
     
       - name: Check pull request message for wiki link
         env: 
