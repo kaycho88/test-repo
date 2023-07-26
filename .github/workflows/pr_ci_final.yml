@@ -10,7 +10,7 @@ jobs:
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set env
         env:
           PR_NUMBER: ${{ github.event.number }}
@@ -19,7 +19,7 @@ jobs:
           echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
           gh pr view \
             --json labels \
-            --jq '.labels[].name | select("feature"))' "$PR_NUMBER"
+            --jq '.labels[].name | select("feature")' "$PR_NUMBER"
     
       - name: Check pull request message for wiki link
         env: 
