@@ -10,6 +10,7 @@ jobs:
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - name: Set env
         env:
           PR_NUMBER: ${{ github.event.number }}
