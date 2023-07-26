@@ -24,6 +24,7 @@ jobs:
                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
           echo "LABELS<<EOF" >> $GITHUB_ENV
           echo "$LABELS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
         env: 
