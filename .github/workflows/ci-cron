@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Check commit history within last 7 days
         run: |
