@@ -1,7 +1,7 @@
 name: Deploy Production to SNUH naver cloud
 on:
   schedule:
-    - cron: "* * * * *"
+    - cron: "0 1 * * *"
 
 jobs:
   deploy:
