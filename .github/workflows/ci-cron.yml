@@ -21,9 +21,3 @@ jobs:
 
       - name: After checking process
         run: echo "After checking process.. my deployment process running here..."
-
-
-      - name: Always running process
-        run: echo "Job status : ${{ job.status }}"
-        if: always()
-
