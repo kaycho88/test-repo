@@ -12,8 +12,8 @@ jobs:
 
       - name: Check commit history within last 7 days
         run: |
-          echo "git log --since="$(date -d '7 days ago' --utc +%Y-%m-%dT%H:%M:%SZ)" --oneline"
-          if [ "$(git log --since="$(date -d '7 days ago' --utc +%Y-%m-%dT%H:%M:%SZ)" --oneline)" ]; then
+          echo "git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline"
+          if [ "$(git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)" ]; then
             echo "Commits found in the last 7 days. Triggering deployment..."
           else
             echo "No commits in the last 7 days. Skipping deployment."
