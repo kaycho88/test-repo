@@ -21,5 +21,5 @@ jobs:
         # fi
 
       - name: After checking process
-        if: env.COMMITS_WITHIN_7DAYS != ''
+        if: env.COMMITS_WITHIN_7DAYS == ''
         run: echo "After checking process.. my deployment process running here..."
