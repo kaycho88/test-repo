@@ -1,7 +1,7 @@
 name: Deploy Production to SNUH naver cloud
 on:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "* * * * *"
 
 jobs:
   deploy:
@@ -12,12 +12,17 @@ jobs:
 
       - name: Check commit history within last 7 days
         run: |
-          echo "git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline"
+          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)";
+          echo "$(date -u +%s)";
+          echo "$(( $(date -u +%s) - 7*24*60*60 ))";
+          echo "$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ)";
+          echo "$(git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)";
+          git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline;
           if [ "$(git log --since=$(date -u -r $(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)" ]; then
             echo "Commits found in the last 7 days. Triggering deployment..."
           else
             echo "No commits in the last 7 days. Skipping deployment."
-            exit 78  # neutral exit (neither a success, nor a failure)
+            exit 78
           fi
 
       - name: After checking process
