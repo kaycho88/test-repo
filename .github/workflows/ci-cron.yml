@@ -7,12 +7,15 @@ jobs:
   setup:
     name: set up for deploy - SNUH prod
     runs-on: ubuntu-latest
+    outputs:
+      output: ${{ steps.step2.outputs.commits7days }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Check commit history within last 7 days
+        id: step2
         run: |
-          echo "COMMITS_WITHIN_7DAYS=$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +'%Y-%m-%dT%H:%M:%SZ') --oneline)" >> $GITHUB_ENV
+          echo "commits7days=$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +'%Y-%m-%dT%H:%M:%SZ') --oneline)" >> $GITHUB_OUTPUT
         # if [ "$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)" ]; then
         #   echo "Commits found in the last 7 days. Triggering deployment..."
         # else
@@ -20,22 +23,11 @@ jobs:
         #   exit 78
         # fi
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-artifact
-          path: ${{ runner.workspace }}
-
   deploy:
     name: deploy - SNUH prod
     needs: setup
     runs-on: ubuntu-latest
+    if: needs.setup.outputs.output != ''
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: my-artifact
-
       - name: After checking process
-        if: env.COMMITS_WITHIN_7DAYS != ''
         run: echo "After checking process.. my deployment process running here..."
