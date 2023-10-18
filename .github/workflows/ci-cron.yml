@@ -27,7 +27,7 @@ jobs:
     name: deploy - SNUH prod
     needs: setup
     runs-on: ubuntu-latest
-    if: needs.setup.outputs.output != ''
+    if: needs.setup.outputs.output == ''
     steps:
       - name: After checking process
         run: echo "After checking process.. my deployment process running here..."
