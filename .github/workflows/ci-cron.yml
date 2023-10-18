@@ -1,11 +1,11 @@
 name: Deploy Production to SNUH naver cloud
-# on:
-#   schedule:
-#     - cron: "* * * * *"
+on:
+  schedule:
+    - cron: "* * * * *"
 
 jobs:
-  deploy:
-    name: Deploy - SNUH prod
+  setup:
+    name: set up for deploy - SNUH prod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +19,22 @@ jobs:
         #   echo "No commits in the last 7 days. Skipping deployment."
         #   exit 78
         # fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: ${{ runner.workspace }}
+
+  deploy:
+    name: deploy - SNUH prod
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: my-artifact
 
       - name: After checking process
         if: env.COMMITS_WITHIN_7DAYS != ''
