@@ -15,10 +15,10 @@ jobs:
           echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)";
           echo "$(date -u +%s)";
           echo "$(( $(date -u +%s) - 7*24*60*60 ))";
-          echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ' $(( $(date -u +%s) - 7*24*60*60 )))";
-          echo "$(git log --since=$(date -u '+%Y-%m-%dT%H:%M:%SZ' $(( $(date -u +%s) - 7*24*60*60 ))) --oneline)";
-          git log --since=$(date -u '+%Y-%m-%dT%H:%M:%SZ' $(( $(date -u +%s) - 7*24*60*60 ))) --oneline;
-          if [ "$(git log --since=$(date -u '+%Y-%m-%dT%H:%M:%SZ' $(( $(date -u +%s) - 7*24*60*60 ))) --oneline)" ]; then
+          echo "$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ)";
+          echo "$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +'%Y-%m-%dT%H:%M:%SZ') --oneline)";
+          git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline;
+          if [ "$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)" ]; then
             echo "Commits found in the last 7 days. Triggering deployment..."
           else
             echo "No commits in the last 7 days. Skipping deployment."
