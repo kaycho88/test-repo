@@ -6,7 +6,7 @@ on:
 
 jobs:
   detect_wiki_link:
-    if: github.event.label.name == 'feature' && (startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat'))
+    if: github.event.label.name == 'feature' && startsWith(github.head_ref, 'feat')
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
