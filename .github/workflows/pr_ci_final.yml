@@ -6,7 +6,7 @@ on:
 
 jobs:
   detect_wiki_link:
-    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat')
+    if: startsWith(github.head_ref, 'feat') || startsWith(github.head_ref, 'Feat') && ${{ github.event.label.name }} == 'feature'
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
@@ -14,7 +14,6 @@ jobs:
         run: echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
-        if: ${{ github.event.label.name }} == 'feature'
         env: 
           PR_COMMENTS: ${{ toJSON(github.event.pull_request.body) }}
         run: |
