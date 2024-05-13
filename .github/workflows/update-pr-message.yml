@@ -1,0 +1,52 @@
+name: Update PR Message
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  update-pr-message:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Extract commit messages
+      run: |
+        messages=$(git log --pretty=format:'%s' origin/develop..HEAD)
+        echo "Commit Messages:"
+        echo "$messages"
+        echo "::set-output name=messages::$messages"
+      id: extract
+
+    - name: Filter messages with regex
+      run: |
+        filtered=$(echo "${{ steps.extract.outputs.messages }}" | grep -o -E 'XXX-[0-9]{1,3}')
+        echo "Filtered Messages:"
+        echo "$filtered"
+        echo "::set-output name=filtered::$filtered"
+      id: filter
+
+    # - name: Update PR description
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |
+    #     pr_number=$(jq --raw-output .number < "${{ github.event_path }}")
+    #     body=$(jq --raw-output .pull_request.body < "${{ github.event_path }}")
+    #     new_body="$body\n\nExtracted Issues:\n${{ steps.filter.outputs.filtered }}"
+    #     gh pr edit "$pr_number" --body "$new_body"
+    #   uses: github/cli@latest
+    - name: Create or update PR comment
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Extracted Issues:
+          ${{ steps.filter.outputs.filtered }}
