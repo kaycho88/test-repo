@@ -19,22 +19,26 @@ jobs:
         run: |
           echo "🔍 Extracting JIRA issue keys..."
           
+          # Ensure we have the full history and branches
+          git fetch --all
+
           # Extract from branch name
           branch_issues=$(echo "${{ github.head_ref }}" | grep -oE '[A-Z]+-[0-9]+')
 
-          # Extract from commit messages
-          commit_issues=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:%s | grep -oE '[A-Z]+-[0-9]+' | sort -u)
+          # Extract from commit messages (between base and HEAD)
+          commit_issues=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:%s | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
 
           # Fetch PR body via GitHub API
           pr_number="${{ github.event.pull_request.number }}"
           pr_body=$(gh pr view "$pr_number" --json body -q .body)
-          body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u)
+          body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
 
           # Combine and deduplicate
-          all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | sort -u | tr '\n' ',' | sed 's/,$//')
+          all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | grep -v '^$' | sort -u | tr '\n' ',' | sed 's/,$//')
 
           echo "📝 Found issue keys: $all_issues"
           echo "issues=$all_issues" >> $GITHUB_OUTPUT
+
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
