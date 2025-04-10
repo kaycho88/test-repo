@@ -30,7 +30,8 @@ jobs:
           branch_issues=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+' || true)
           echo "branch issues : $branch_issues"
 
-          commit_issues=$(gh pr view "$pr_number" --json commits -q '.commits[].commit.message' | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
+          commit_issues=$(gh pr view "$pr_number" --json commits -q '.commits[].commit.message' )
+          # | grep -oE 'GEBRA-[0-9]+' | sort -u || true
           echo "commit issues : $commit_issues"
 
           pr_number="${{ github.event.pull_request.number }}"
