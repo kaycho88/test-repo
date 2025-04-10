@@ -21,7 +21,11 @@ jobs:
 
           git fetch origin main
 
-          branch_name="${{ github.head_ref }}"
+          pr_number="${{ github.event.pull_request.number }}"
+          pr_json=$(gh pr view "$pr_number" --json headRefName,body,commits -q '.')
+
+
+          branch_name=$(echo "$pr_json" | jq -r .headRefName)
           echo "📌 Branch name: $branch_name"
           branch_issues=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+' || true)
           echo "branch issues : $branch_issues"
@@ -32,8 +36,7 @@ jobs:
           pr_number="${{ github.event.pull_request.number }}"
 
           echo "📄 PR number: $pr_number"
-
-          pr_body=$(gh pr view "$pr_number" --json body -q .body || echo "")
+          pr_body=$(echo "$pr_json" | jq -r .body)
           body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
           all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | grep -v '^$' | sort -u | tr '\n' ',' | sed 's/,$//')
 
