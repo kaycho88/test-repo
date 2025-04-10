@@ -24,15 +24,14 @@ jobs:
           branch_name="${{ github.head_ref }}"
           echo "📌 Branch name: $branch_name"
           branch_issues=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+' || true)
+          echo "branch issues : $branch_issues"
 
           commit_issues=$(gh pr view "$pr_number" --json commits -q '.commits[].commit.message' | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
+          echo "commit issues : $commit_issues"
 
           pr_number="${{ github.event.pull_request.number }}"
 
           echo "📄 PR number: $pr_number"
-
-          # Add debug to confirm auth
-          gh auth status || true
 
           pr_body=$(gh pr view "$pr_number" --json body -q .body || echo "")
           body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
