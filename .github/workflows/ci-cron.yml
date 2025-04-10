@@ -1,0 +1,33 @@
+name: Deploy Production to SNUH naver cloud
+# on:
+  # schedule:
+    # - cron: "* * * * *"
+
+jobs:
+  setup:
+    name: set up for deploy - SNUH prod
+    runs-on: ubuntu-latest
+    outputs:
+      output: ${{ steps.step2.outputs.commits7days }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check commit history within last 7 days
+        id: step2
+        run: |
+          echo "commits7days=$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +'%Y-%m-%dT%H:%M:%SZ') --oneline)" >> $GITHUB_OUTPUT
+        # if [ "$(git log --since=$(date -u -d @$(( $(date -u +%s) - 7*24*60*60 )) +%Y-%m-%dT%H:%M:%SZ) --oneline)" ]; then
+        #   echo "Commits found in the last 7 days. Triggering deployment..."
+        # else
+        #   echo "No commits in the last 7 days. Skipping deployment."
+        #   exit 78
+        # fi
+
+  deploy:
+    name: deploy - SNUH prod
+    needs: setup
+    runs-on: ubuntu-latest
+    if: needs.setup.outputs.output == ''
+    steps:
+      - name: After checking process
+        run: echo "After checking process.. my deployment process running here..."
