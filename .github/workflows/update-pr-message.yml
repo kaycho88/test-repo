@@ -1,52 +1,57 @@
-name: Update PR Message
+name: Extract JIRA Issues and Update PR
 
 on:
   pull_request:
+    types: [opened, synchronize]
     branches:
       - main
-    types:
-      - opened
-      - synchronize
 
 jobs:
-  update-pr-message:
+  extract-jira-issues:
+    if: github.head_ref == 'develop' || startsWith(github.head_ref, 'develop/')
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Extract commit messages
-      run: |
-        messages=$(git log --pretty=format:'%s' origin/develop..HEAD)
-        echo "Commit Messages:"
-        echo "$messages"
-        echo "::set-output name=messages::$messages"
-      id: extract
+      - name: Extract JIRA issues from commits, branch, and PR body
+        id: extract
+        run: |
+          echo "🔍 Extracting JIRA issue keys..."
+          
+          # Extract from branch name
+          branch_issues=$(echo "${{ github.head_ref }}" | grep -oE '[A-Z]+-[0-9]+')
 
-    - name: Filter messages with regex
-      run: |
-        filtered=$(echo "${{ steps.extract.outputs.messages }}" | grep -o -E 'XXX-[0-9]{1,3}')
-        echo "Filtered Messages:"
-        echo "$filtered"
-        echo "::set-output name=filtered::$filtered"
-      id: filter
+          # Extract from commit messages
+          commit_issues=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:%s | grep -oE '[A-Z]+-[0-9]+' | sort -u)
 
-    # - name: Update PR description
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   run: |
-    #     pr_number=$(jq --raw-output .number < "${{ github.event_path }}")
-    #     body=$(jq --raw-output .pull_request.body < "${{ github.event_path }}")
-    #     new_body="$body\n\nExtracted Issues:\n${{ steps.filter.outputs.filtered }}"
-    #     gh pr edit "$pr_number" --body "$new_body"
-    #   uses: github/cli@latest
-    - name: Create or update PR comment
-      uses: peter-evans/create-or-update-comment@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repository: ${{ github.repository }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Extracted Issues:
-          ${{ steps.filter.outputs.filtered }}
+          # Fetch PR body via GitHub API
+          pr_number="${{ github.event.pull_request.number }}"
+          pr_body=$(gh pr view "$pr_number" --json body -q .body)
+          body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u)
+
+          # Combine and deduplicate
+          all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          echo "📝 Found issue keys: $all_issues"
+          echo "issues=$all_issues" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update PR body with extracted JIRA issues
+        if: steps.extract.outputs.issues != ''
+        run: |
+          pr_number="${{ github.event.pull_request.number }}"
+          existing_body=$(gh pr view "$pr_number" --json body -q .body)
+
+          new_body="### Linked JIRA Issues\n${{ steps.extract.outputs.issues }}\n\n$existing_body"
+
+          # Avoid duplication
+          cleaned_body=$(echo "$new_body" | awk '!seen[$0]++')
+
+          echo "$cleaned_body" > pr_body.txt
+
+          gh pr edit "$pr_number" --body-file pr_body.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
