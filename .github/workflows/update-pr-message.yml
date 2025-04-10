@@ -28,6 +28,7 @@ jobs:
           commit_issues=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:%s | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
 
           pr_number="${{ github.event.pull_request.number }}"
+
           echo "📄 PR number: $pr_number"
 
           # Add debug to confirm auth
@@ -35,11 +36,11 @@ jobs:
 
           pr_body=$(gh pr view "$pr_number" --json body -q .body || echo "")
           body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
-
           all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | grep -v '^$' | sort -u | tr '\n' ',' | sed 's/,$//')
 
           echo "📝 Found issue keys: $all_issues"
           echo "issues=$all_issues" >> $GITHUB_OUTPUT
+
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
