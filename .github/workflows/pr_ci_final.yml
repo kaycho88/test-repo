@@ -10,8 +10,28 @@ jobs:
     name: detect-wiki
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Check label
+        run: |
+          HAS_FEATURE=$(echo ${{contains(github.event.pull_request.labels.*.name, 'feature')}})
+          echo "Does the PR label include a 'feature'? $HAS_FEATURE"
+          if [[ $HAS_FEATURE == true ]]; then exit 0; else exit 1; fi
+
       - name: Set env
-        run: echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "LINK=https://github.com/${GITHUB_REPOSITORY}/wiki" >> $GITHUB_ENV
+#           LABELS=$(gh pr view \
+#                     --json labels \
+#                     --jq '.labels[].name | select("feature")' "$PR_NUMBER")
+#           echo "LABELS<<EOF" >> $GITHUB_ENV
+#           echo "$LABELS" >> $GITHUB_ENV
+#           echo "EOF" >> $GITHUB_ENV
     
       - name: Check pull request message for wiki link
         env: 
