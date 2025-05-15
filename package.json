@@ -1,6 +1,6 @@
 {
   "name": "test-repo",
-  "version": "0.5.34",
+  "version": "0.5.35",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
