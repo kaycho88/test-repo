@@ -1,7 +1,6 @@
 name: Deploy Production
 on:
   pull_request:
-    types: [opened, synchronize]
     branches:
       - "**"
 
