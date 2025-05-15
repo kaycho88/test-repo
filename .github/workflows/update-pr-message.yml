@@ -1,0 +1,67 @@
+name: Extract JIRA Issues and Update PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+jobs:
+  extract-jira-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract JIRA issues from commits, branch, and PR body
+        id: extract
+        run: |
+         echo "🔍 Extracting JIRA issue keys..."
+
+          git fetch origin main
+
+          pr_number="${{ github.event.pull_request.number }}"
+          pr_json=$(gh pr view "$pr_number" --json headRefName,body,commits -q '.')
+
+
+          branch_name=$(echo "$pr_json" | jq -r .headRefName)
+          echo "📌 Branch name: $branch_name"
+          branch_issues=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+' || true)
+          echo "branch issues : $branch_issues"
+
+          commit_issues=$(gh pr view "$pr_number" --json commits -q '.commits[].commit.message' )
+          # | grep -oE 'GEBRA-[0-9]+' | sort -u || true
+          echo "commit issues : $commit_issues"
+
+          pr_number="${{ github.event.pull_request.number }}"
+
+          echo "📄 PR number: $pr_number"
+          pr_body=$(echo "$pr_json" | jq -r .body)
+          body_issues=$(echo "$pr_body" | grep -oE '[A-Z]+-[0-9]+' | sort -u || true)
+          all_issues=$(echo -e "${branch_issues}\n${commit_issues}\n${body_issues}" | grep -v '^$' | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          echo "📝 Found issue keys: $all_issues"
+          echo "issues=$all_issues" >> $GITHUB_OUTPUT
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update PR body with extracted JIRA issues
+        if: steps.extract.outputs.issues != ''
+        run: |
+          pr_number="${{ github.event.pull_request.number }}"
+
+          # Fetch existing body
+          existing_body=$(gh pr view "$pr_number" --json body -q .body)
+
+          # Clean up existing JIRA section if it exists
+          cleaned_body=$(echo "$existing_body" | sed '/^### Linked JIRA Issues/,/^$/d')
+
+          # Proper formatting
+          echo -e "### Linked JIRA Issues\n${{ steps.extract.outputs.issues }}\n\n$cleaned_body" > pr_body.txt
+
+          gh pr edit "$pr_number" --body-file pr_body.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
