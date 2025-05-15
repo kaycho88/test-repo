@@ -1,0 +1,40 @@
+name: Deploy Production
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+  actions: write
+
+jobs:
+  fetch-regions:
+    name: Fetch regions
+    runs-on: ubuntu-latest
+    outputs:
+      domains: ${{ steps.set-domains.outputs.domains }}
+    steps:
+      - name: Configure AWS Profile(prod)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::370873854997:role/GithubActionRole
+          aws-region: ap-northeast-2
+
+      - name: Fetch regions from parameter store
+        run: |
+          PARAM_VALUE=$(aws ssm get-parameter --name "/gebra/saas/deploy/organizations" --query "Parameter.Value" --output text)
+          echo "Raw Parameter Value: $PARAM_VALUE"
+          echo "$PARAM_VALUE" | jq '.' > deploy-regions.json
+
+      - name: Set output
+        id: set-domains
+        run: |
+          DOMAINS=$(jq -c '.domains' deploy-regions.json)
+          echo "domains=$DOMAINS" >> $GITHUB_OUTPUT
+          echo "$DOMAINS"
